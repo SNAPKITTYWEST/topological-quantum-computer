@@ -12,6 +12,51 @@ A mathematical formalization and simulation framework for a hypothetical topolog
 
 ---
 
+## Purpose of This Repository
+
+This repository exists to answer a hard question directly:
+
+> If we build the most disciplined topological quantum-computing model we can,
+> does it create a practical advantage for SHA-style cryptanalysis?
+
+The current answer is **no for generic hash cryptanalysis**, and that negative
+result is part of the value of the repo. Quantum computers are not magic
+parallel brute-force machines. They only help when the problem has mathematical
+structure that quantum interference can exploit. For random-looking hash
+preimage search, the best generic quantum advantage remains Grover-style
+square-root speedup, and the reversible oracle, braid compilation, coherence,
+and error-correction costs still dominate.
+
+So the repo is not a claim that topological quantum computers "break" hashes.
+It is a falsifiable framework for showing exactly where the advantage stops:
+
+- what a Fibonacci-anyon architecture would need,
+- what the logical circuit would cost,
+- what the braid compiler would have to preserve,
+- what cryptanalytic speedup is actually available,
+- and where physical/runtime resources make the attack impractical.
+
+This also explains why constraint systems matter. For many structured problems,
+a constraint solver, proof engine, SAT/SMT system, Prolog engine, or Lean-backed
+search can do the useful part more directly: encode rules, eliminate impossible
+states, propagate consequences, and produce witnesses or contradictions.
+
+Quantum search is amplitude-directed search. Constraint systems are
+proof-directed search. For this stack, the practical architecture is often the
+constraint/proof system: deterministic audit trails, explicit failure reasons,
+reproducible witnesses, and no dependence on unavailable physical qubits.
+
+The useful outcome is therefore not "quantum wins at everything." The useful
+outcome is a clean boundary:
+
+- use topological quantum models to study invariant-preserving computation,
+  braid compilation, and resource limits;
+- use constraint systems for proof-directed pruning, program synthesis,
+  verification, and reproducible search;
+- do not confuse either with a practical full-round hash-breaking machine.
+
+---
+
 ## Architecture at a Glance
 
 ```
@@ -186,6 +231,7 @@ R^{ττ}_τ = e^{3πi/5}    (τ channel)
 | Braiding alone gives universal gates | **TRUE (math only)** |
 | Lean 4 formalization completes all proofs | **NO** (many `sorry`s) |
 | This beats surface codes | **UNPROVEN** |
+| Quantum search replaces constraint/proof systems | **FALSE** (constraint systems remain the practical engine for many structured problems) |
 
 ---
 
