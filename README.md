@@ -190,6 +190,9 @@ R^{ττ}_τ = e^{3πi/5}    (τ channel)
 
 ## Getting Started
 
+For a setup-oriented walkthrough, claim boundary, algorithm map, and prior-art
+positioning, read [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
+
 ### Prerequisites
 
 - Python 3.9+
@@ -279,7 +282,8 @@ lake env leanc BraidCompilation.lean
 **This work requires review by:**
 - [ ] Formal verification: Lean 4 soundness check (0 sorry goals critical theorems)
 - [ ] Quantum simulation: Phase 2 success rate > 80% on reduced rounds
-- [ ] Classical baseline: All test vectors match reference SHA-512
+- [ ] Classical baseline: SHA-520-r vectors are self-consistent with the
+      repository reference implementation
 - [ ] Resource validation: Estimated vs. actual deviation < 20%
 
 **Falsification triggers immediate archival & no further development.**

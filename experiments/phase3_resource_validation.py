@@ -11,6 +11,7 @@ Success criteria:
 
 import json
 from datetime import datetime
+from pathlib import Path
 
 
 def validate_resource_estimates():
@@ -39,19 +40,19 @@ def validate_resource_estimates():
 
     results = []
     for est in estimates:
-        # Placeholder: in real run, would compare with actual circuit transpilation
         result = {
             "config": f"r{est['rounds']}_b{est['target_bits']}",
             "estimated_qubits": est['estimated_qubits'],
             "estimated_t_gates": est['estimated_t_gates'],
             "estimated_depth": est['estimated_depth'],
+            "evidence": "estimate-only; no Qiskit transpilation artifact was consumed",
             "actual_qubits": est['estimated_qubits'] * 1.05,  # Assume 5% overhead
             "actual_t_gates": est['estimated_t_gates'] * 1.08,
             "actual_depth": est['estimated_depth'] * 1.10,
             "deviation_qubits_pct": 5.0,
             "deviation_t_gates_pct": 8.0,
             "deviation_depth_pct": 10.0,
-            "status": "PASS" if 8.0 < 20.0 else "FAIL"
+            "status": "ESTIMATE_ONLY"
         }
         results.append(result)
         print(f"\n   {result['config']}:")
@@ -62,7 +63,7 @@ def validate_resource_estimates():
     report = {
         "timestamp": datetime.now().isoformat(),
         "phase": "3",
-        "status": "PASSED" if all(r['status'] == "PASS" for r in results) else "FAILED",
+        "status": "ESTIMATE_ONLY",
         "validations": results,
         "max_deviation_pct": max(r['deviation_t_gates_pct'] for r in results),
         "threshold_pct": 20.0,
@@ -73,9 +74,8 @@ def validate_resource_estimates():
     print(f"   Threshold: {report['threshold_pct']:.1f}%")
     print(f"   Status: {report['status']}")
 
-    # Save report
-    output_file = "/c/Users/jessi/Desktop/topological-quantum-computer/experiments/phase3_report.json"
-    with open(output_file, 'w') as f:
+    output_file = Path(__file__).with_name("phase3_report.json")
+    with output_file.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
     print(f"\n   ✓ Report saved to {output_file}")
 

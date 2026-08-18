@@ -6,7 +6,11 @@ Implements Grover oracle and amplitude amplification for quantum preimage attack
 
 import math
 from typing import Dict, Any, List, Tuple, Optional
-from quantum_sha520 import ReversibleSHA520, QuantumCircuit
+
+try:
+    from .quantum_sha520 import ReversibleSHA520, QuantumCircuit
+except ImportError:  # pragma: no cover - supports direct script execution
+    from quantum_sha520 import ReversibleSHA520, QuantumCircuit
 
 
 class GroverSHA520:

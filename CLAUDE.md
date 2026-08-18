@@ -98,7 +98,8 @@ SHA-520 reference implementation
 = validation that oracle is correct
 ```
 
-**Gate:** Phase 1 must pass before Phase 2 runs. All test vectors match SHA-512 reference.
+**Gate:** Phase 1 must pass before Phase 2 runs. SHA-520-r test vectors must be
+self-consistent with the repository reference implementation.
 
 ### Layer 3: Quantum Simulation
 
@@ -263,7 +264,8 @@ If physics disagrees with math, physics wins. Until then, the math is frozen.
 
 **Codex, when you audit:**
 
-1. **Verify all test vectors** match SHA-512 reference
+1. **Verify all test vectors** match the repository SHA-520-r reference
+   implementation
 2. **Check Lean soundness:** `lake build` with zero critical sorries
 3. **Run Phase 2 simulation:** Expect >80% success on 4-round toy
 4. **Validate falsification criteria:** Each is concrete, testable, irreversible

@@ -59,7 +59,8 @@
   - `logical_qubit_count` must match Fibonacci recurrence
   - Conjectures about physical realizability marked as `axiom`
 
-- [ ] **Python Test Vectors:** Verify SHA-520 matches SHA-512 reference
+- [ ] **Python Test Vectors:** Verify SHA-520-r vectors are self-consistent
+  with the repository reference implementation
   - Phase 1 script runs: `python experiments/phase1_classical_validation.py`
   - All reduced-round variants (r=4,8,12,16,20,24,80) produce correct output
   - Classical brute-force finds preimage in ~2^target_bits trials

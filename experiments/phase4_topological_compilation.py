@@ -13,6 +13,7 @@ Outputs:
 
 import json
 from datetime import datetime
+from pathlib import Path
 
 
 def generate_braid_compilation():
@@ -87,9 +88,8 @@ def generate_braid_compilation():
     print(f"   Max physical anyons: {report['total_anyons_max']:,}")
     print(f"   Scalability: {report['scalability_limit']}")
 
-    # Save report
-    output_file = "/c/Users/jessi/Desktop/topological-quantum-computer/experiments/phase4_report.json"
-    with open(output_file, 'w') as f:
+    output_file = Path(__file__).with_name("phase4_report.json")
+    with output_file.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
     print(f"\n   ✓ Report saved to {output_file}")
 

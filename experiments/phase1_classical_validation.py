@@ -1,14 +1,18 @@
 """Phase 1: Classical validation of SHA-520-r implementation.
 
 Success criteria:
-- All test vectors match SHA-512 reference
+- SHA-520-r vectors are self-consistent with the repository reference
+  implementation
 - Reduced-round variants (r=4,8,12,16,20,24,80) implemented correctly
 - Classical brute-force preimage finds target in ~2^target_bits trials
 - Classical birthday attack finds collision in ~2^(target_bits/2) trials
 """
 
 import sys
-sys.path.insert(0, '/c/Users/jessi/Desktop/topological-quantum-computer/python')
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "python"))
 
 from classical.sha520_ref import SHA520
 from classical.classical_baselines import measure_classical_complexity
@@ -77,9 +81,8 @@ def run_phase1():
     print("\n3. Report:")
     print(json.dumps(report, indent=2))
 
-    # Save report
-    output_file = "/c/Users/jessi/Desktop/topological-quantum-computer/experiments/phase1_report.json"
-    with open(output_file, 'w') as f:
+    output_file = Path(__file__).with_name("phase1_report.json")
+    with output_file.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
     print(f"\n   ✓ Report saved to {output_file}")
 
