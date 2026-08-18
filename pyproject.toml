@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "topological-quantum-computer"
+version = "0.1.0"
+description = "Mathematical formalization and simulation of Fibonacci anyon topological quantum computer"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "Ahmad", email = "ahmedparr93@gmail.com"},
+    {name = "Claude Code", email = "claude@anthropic.com"}
+]
+license = {text = "Research Only"}
+
+dependencies = [
+    "numpy>=1.21",
+    "scipy>=1.7",
+]
+
+[project.optional-dependencies]
+quantum = [
+    "qiskit>=0.39",
+    "qiskit-aer>=0.11",
+]
+simulation = [
+    "tensornetwork>=0.4",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0",
+    "black>=22.0",
+    "flake8>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/SNAPKITTYWEST/topological-quantum-computer"
+Documentation = "https://github.com/SNAPKITTYWEST/topological-quantum-computer/tree/main/docs"
+Repository = "https://github.com/SNAPKITTYWEST/topological-quantum-computer"
+
+[tool.setuptools]
+package-dir = {"" = "python"}
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+
+[tool.coverage.run]
+source = ["python"]
+omit = ["*/tests/*"]
