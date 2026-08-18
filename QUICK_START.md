@@ -22,7 +22,7 @@ hasher = SHA520(rounds=80)
 
 # Hash data
 digest = hasher.digest(b"hello world")
-print(digest.hex())  # 512-bit (64-byte) hash
+print(digest.hex())  # 520-bit (65-byte) hash
 
 # Use reduced rounds for faster testing
 hasher_4 = SHA520(rounds=4)
@@ -145,7 +145,7 @@ python/
 
 ## Important Constants
 
-- **SHA-520 digest size**: 64 bytes (512 bits)
+- **SHA-520 digest size**: 65 bytes (520 bits)
 - **SHA-520 block size**: 128 bytes (1024 bits)
 - **Toy SHA-520 digest size**: 16 bytes (128 bits)
 - **Grover optimal iterations**: π/4 × √(search space)
@@ -201,7 +201,7 @@ pip install numpy scipy
 
 ## Reference Documentation
 
-- SHA-520 spec: 512-bit output, configurable rounds
+- SHA-520 spec: 520-bit output, configurable rounds
 - Grover complexity: O(√N) queries for N-item search
 - Physical qubits: ~1000× logical qubits with surface code error correction
 - Gate time assumptions: 100 ns (current NISQ baseline)

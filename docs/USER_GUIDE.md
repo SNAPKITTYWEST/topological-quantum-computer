@@ -1,6 +1,6 @@
 # User Guide: Topological Quantum Computer SHA-520 Research Repo
 
-This repository is a research scaffold for studying a hypothetical
+This repository is a staged research implementation for studying a hypothetical
 Fibonacci-anyon topological quantum computer and its use as a simulation target
 for SHA-520-style reduced-round cryptanalysis experiments.
 
@@ -19,9 +19,9 @@ The repo combines four layers:
 | Experiment scripts | Four-phase validation pipeline | Runnable after environment setup; some phases are estimate-only |
 
 `SHA-520` is the repository's research label. The current
-`python/classical/sha520_ref.py` implementation returns a 64-byte, 512-bit
-digest and should be described as SHA-512-family research code rather than a
-NIST SHA standard.
+`python/classical/sha520_ref.py` implementation returns a 65-byte, 520-bit
+digest using the explicit arrays in `python/qlambda/arrays.py`. It is still a
+repository-defined research construction, not a NIST SHA standard.
 
 ## Setup
 
@@ -128,7 +128,8 @@ Prior art that should be acknowledged:
   [FIPS 180-4](https://doi.org/10.6028/NIST.FIPS.180-4).
 
 Novelty claims should therefore be limited to this repository's specific
-combination of Lean proof scaffolding, SHA-520-r simulation harness, resource
+combination of Lean proof surfaces, SHA-520-r simulation harness, Q-Lambda DSL,
+array manifests, resource
 auditing, and topological-compilation documentation.
 
 ## Safety Boundary

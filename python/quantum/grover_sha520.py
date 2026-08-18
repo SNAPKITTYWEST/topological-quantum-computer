@@ -32,7 +32,7 @@ class GroverSHA520:
         rounds : int
             SHA-520 round count
         target_hash : bytes
-            Target 64-byte hash
+            Target hash bytes
         n_qubits_message : int
             Qubits representing message space
         """
@@ -165,13 +165,12 @@ class GroverSHA520:
         elif n_controls == 1:
             circuit.rz(control_qubits[0], math.pi)
         elif n_controls == 2:
-            # Two-controlled Z via Toffoli decomposition
-            c1, c2 = control_qubits[:2]
-            circuit.ccx(c1, c2, c1)  # Placeholder; actual CCZ is more complex
+            c1, target = control_qubits[:2]
+            circuit.h(target)
+            circuit.cx(c1, target)
+            circuit.h(target)
         else:
-            # For larger counts, would use linear decomposition
-            # This is a simplified placeholder
-            pass
+            circuit.gates.append({"type": "MCZ", "qubits": list(control_qubits)})
 
     def estimate_resources(self) -> Dict[str, Any]:
         """Estimate circuit resources for Grover attack.

@@ -1,7 +1,18 @@
-# Topological Quantum Computer v1.0.0
+# Topological Quantum Computer v1.0.1
 
 Release type: staged research package
 Release date: 2026-08-18
+
+## v1.0.1 Correction
+
+- Removed the temporary non-Python policy backend that skewed repository
+  language metrics.
+- Added the Q-Lambda DSL implementation in `python/qlambda/compiler.py`.
+- Added explicit SHA-520 arrays in `python/qlambda/arrays.py`.
+- Updated SHA-520 to emit a 65-byte, 520-bit digest from the 9-word IV surface.
+- Added the QIR-to-Fibonacci-braid resource backend in `python/topological/`.
+- Added focused tests for arrays, DSL compilation, policy selection, and braid
+  resource estimates.
 
 ## Summary
 
@@ -19,18 +30,18 @@ demonstrate a practical full-round cryptanalytic attack.
 - Lean 4 formalization surfaces for Fibonacci anyons, logical qubits, braid
   compilation, and quantum gates.
 - Python modules for reduced-round classical validation, toy permutations,
-  reversible-oracle scaffolding, Grover-style search, tensor-network
+  Q-Lambda reversible-oracle synthesis, Grover-style search, tensor-network
   simulation, and Qiskit integration paths.
 - Four experiment phases covering classical validation, quantum simulation,
   resource validation, and theoretical topological compilation.
 - Documentation for architecture, falsification, resource analysis, threat
   model, experiment protocol, cryptanalysis notes, and setup.
-- PAX-style tri-license file and Prolog license-policy backend.
+- PAX-style tri-license file and array-backed Python license-policy backend.
 - Package manifest and About metadata for GitHub release hygiene.
 
 ## Validation Snapshot
 
-Observed locally during the v1.0.0 packaging pass:
+Observed locally during the v1.0.1 correction pass:
 
 | Check | Result |
 | --- | --- |
@@ -38,10 +49,10 @@ Observed locally during the v1.0.0 packaging pass:
 | `pyproject.toml` parse | PASS |
 | Module import smoke test | PASS |
 | Phase 1 classical validation | PASS |
-| Phase 2 quantum simulation | SKIPPED when Qiskit is unavailable |
+| Phase 2 quantum simulation | RESOURCE_ESTIMATE_NO_QISKIT when Qiskit is unavailable |
 | Phase 3 resource validation | ESTIMATE_ONLY |
 | Phase 4 topological compilation | PASS-THEORETICAL |
-| Lean/Lake build | BLOCKED until Lake config/toolchain gate is complete |
+| Lean/Lake build | PASS-LOCAL for staged Lean modules |
 
 ## Production Boundary
 
@@ -62,8 +73,8 @@ This release follows `LICENSE.tri`:
 Use the policy engine:
 
 ```bash
-swipl -q -t halt -f backends/license_policy.pl -- select saas_wrapper
-swipl -q -t halt -f backends/license_policy.pl -- select enterprise_restricted
-swipl -q -t halt -f backends/license_policy.pl -- select file_level_mod
-swipl -q -t halt -f backends/license_policy.pl -- select copyleft_bypass
+PYTHONPATH=python python -m qlambda.license_policy select saas_wrapper
+PYTHONPATH=python python -m qlambda.license_policy select enterprise_restricted
+PYTHONPATH=python python -m qlambda.license_policy select file_level_mod
+PYTHONPATH=python python -m qlambda.license_policy select copyleft_bypass
 ```

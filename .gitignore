@@ -42,6 +42,8 @@ env/
 .DS_Store
 
 # Lean
+.lake/
+lean/.lake/
 lake-packages/
 build/
 *.olean

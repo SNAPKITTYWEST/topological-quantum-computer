@@ -143,19 +143,28 @@ class TensorNetworkSimulator:
         Notes
         -----
         Simplified implementation: modifies tensors in-place with phase.
-        Full implementation would require proper tensor SVD decomposition.
+        This local MPS implementation only supports adjacent CNOT exactly.
         """
         assert abs(control - target) == 1
 
-        # Simplified: Apply CNOT via phase modification
-        # In a full implementation, we would:
-        # 1. Contract adjacent tensors
-        # 2. Apply 2-qubit gate
-        # 3. Decompose via SVD
-
-        # For now, just mark the operation
-        # (This is sufficient for resource estimation and architectural testing)
-        pass
+        q0, q1 = sorted((control, target))
+        theta = np.array(
+            [
+                [1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 1, 0],
+            ],
+            dtype=complex,
+        ).reshape(2, 2, 2, 2)
+        pair = np.tensordot(self.tensors[q0], self.tensors[q1], axes=0)
+        evolved = np.tensordot(theta, pair, axes=([2, 3], [0, 1]))
+        matrix = evolved.reshape(2, 2)
+        u, s, vh = np.linalg.svd(matrix, full_matrices=False)
+        bond = min(len(s), self.max_bond_dim)
+        root_s = np.sqrt(s[:bond])
+        self.tensors[q0] = u[:, :bond] @ np.diag(root_s)
+        self.tensors[q1] = np.diag(root_s) @ vh[:bond, :]
 
     def measure(self, qubits: Optional[List[int]] = None) -> Dict[str, int]:
         """Measure qubits and return outcome.
@@ -176,14 +185,12 @@ class TensorNetworkSimulator:
         outcome = {}
 
         for q in qubits:
-            # Get probabilities for this qubit
-            # This requires partial tracing and is expensive
-
-            # Simplified: sample from Born rule
-            # (full implementation would compute reduced density matrix)
-            prob_0 = np.random.rand()  # Placeholder
-
-            outcome[q] = 0 if prob_0 > 0.5 else 1
+            tensor = self.tensors[q]
+            flat = np.asarray(tensor).reshape(2, -1)
+            prob_0 = float(np.sum(np.abs(flat[0]) ** 2))
+            prob_1 = float(np.sum(np.abs(flat[1]) ** 2))
+            total = max(prob_0 + prob_1, 1e-12)
+            outcome[q] = int(np.random.random() >= prob_0 / total)
 
         return outcome
 

@@ -11,7 +11,7 @@ The repository connects four surfaces:
 1. **Lean 4 formalization** for Fibonacci anyon categories, logical qubits,
    braid compilation, and gate universality surfaces.
 2. **Python reference code** for reduced-round SHA-family toy models,
-   classical baselines, reversible-oracle scaffolding, Grover-style search,
+   classical baselines, Q-Lambda reversible-oracle synthesis, Grover-style search,
    and resource estimates.
 3. **Experiment scripts** that separate classical validation, quantum
    simulation, resource validation, and topological compilation.
@@ -40,13 +40,14 @@ audited, extended, rejected, or archived based on explicit gates.
 
 ## Package Status
 
-Version `1.0.0` is a staged research release. Python syntax/import checks and
-the reduced-round classical validation path have been exercised locally. Lean
-kernel verification, Qiskit-backed quantum simulation, and hardware execution
-remain separate gates documented in `CODEX_AUDIT.md` and `PACKAGE.md`.
+Version `1.0.1` is a staged research release. Python syntax/import checks,
+reduced-round classical validation, Q-Lambda resource estimation, and local
+Lean kernel replay have been exercised locally. Qiskit-backed Aer simulation
+and hardware execution remain separate gates documented in `CODEX_AUDIT.md`
+and `PACKAGE.md`.
 
 ## License
 
 This repository follows the same tri-license structure used by the PAX stack:
 BSL-1.1, AGPL-3.0, MPL-2.0, and commercial licensing paths selected through
-`backends/license_policy.pl`.
+the array-backed Python policy engine in `python/qlambda/license_policy.py`.

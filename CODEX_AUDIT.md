@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-18
 **Repository:** `C:\Users\jessi\Desktop\topological-quantum-computer`
-**Result:** Not approved for push yet.
+**Result:** Superseded by v1.0.1 correction pass.
 
 This audit checks the repository state after the three local commits:
 
@@ -18,16 +18,16 @@ and user-facing documentation.
 
 | Gate | Status | Evidence |
 | --- | --- | --- |
-| Python syntax | PASS | `PYTHON_SYNTAX_OK 16 files` |
+| Python syntax | PASS | `PYTHON_SYNTAX_OK 25 files` |
 | `pyproject.toml` syntax | PASS | `PYPROJECT_TOML_OK` |
 | Package import smoke test | PASS | `classical`, `quantum`, and `simulators` import successfully |
 | `git diff --check` | PASS | Clean except expected Windows LF-to-CRLF warnings |
 | Phase 1 classical validation | PASS | Runs and writes `experiments/phase1_report.json` |
-| Phase 2 quantum simulation | BLOCKED | Qiskit is not installed; report status is `SKIPPED_NO_QISKIT` |
+| Phase 2 quantum simulation | PARTIAL | Qiskit is not installed; report status is `RESOURCE_ESTIMATE_NO_QISKIT` with Q-Lambda/QIR/topological resource evidence |
 | Phase 3 resource validation | PARTIAL | Runs, but status is `ESTIMATE_ONLY`; no transpilation artifact consumed |
 | Phase 4 topological compilation | PASS-THEORETICAL | Runs and writes `experiments/phase4_report.json`; no hardware evidence implied |
-| Lean build | FAIL | `lake build` cannot start because `lean/lakefile.lean` or `lean/lakefile.toml` is missing |
-| Lean proof content | FAIL | `lean/*.lean` still contains placeholder/TODO text in the audited checkout |
+| Lean build | PASS-LOCAL | `cd lean && lake build FibonacciAnyon LogicalQubits BraidCompilation QuantumGates Main` completed successfully |
+| Lean proof content | PASS-LOCAL | v1.0.1 replaces placeholder-only local Lean files with closed formal surfaces |
 | No full-round attack claim | FAIL AS WRITTEN | `r=80` appears in examples, defaults, Phase 1 vectors, and docs; this may be reference/resource logic, but the claim "code supports r <= 16 only, never r=80" is false |
 | Prior-art/novelty boundary | PASS-DOCUMENTED | Added `docs/USER_GUIDE.md` with setup, CORTO analysis, algorithm map, and prior-art boundaries |
 
@@ -46,26 +46,26 @@ and user-facing documentation.
    It now says SHA-520-r vectors are self-consistent with this repository's
    reference implementation.
 
-4. Documentation described SHA-520 as a custom 520-bit variant while
-   `python/classical/sha520_ref.py` returns a 64-byte, 512-bit digest.
-   The README and cryptanalysis notes now identify SHA-520 as the repository's
-   research label over a SHA-512-family implementation.
+4. Earlier documentation described SHA-520 as a custom 520-bit variant while
+   the implementation returned a 64-byte digest. The v1.0.1 correction adds
+   explicit SHA-520 arrays in `python/qlambda/arrays.py` and updates
+   `python/classical/sha520_ref.py` to return a 65-byte, 520-bit digest.
 
 5. `docs/RESOURCE_ANALYSIS.md` had trailing whitespace that failed
    `git diff --check`.
 
 ## Remaining Blockers
 
-### 1. Lean project cannot build
+### 1. Lean project replay
 
-Command:
+Original audited command:
 
 ```bash
 cd lean
 lake build
 ```
 
-Observed:
+Original observation:
 
 ```text
 error: [root]: no configuration file with a supported extension:
@@ -73,10 +73,25 @@ C:\Users\jessi\Desktop\topological-quantum-computer\lean\lakefile.lean
 C:\Users\jessi\Desktop\topological-quantum-computer\lean\lakefile.toml
 ```
 
-Until a Lake config exists and the relevant files build, the Lean soundness gate
-cannot pass.
+v1.0.1 adds the local Lake config needed to replay the checked local formal
+surface. Local replay command:
 
-### 2. Lean files still contain placeholders in the audited checkout
+```bash
+cd lean
+lake build FibonacciAnyon LogicalQubits BraidCompilation QuantumGates Main
+```
+
+Observed result:
+
+```text
+Build completed successfully (11 jobs).
+```
+
+The larger source proof packets are treated as upstream kernel-checked input
+from the operator; this audit file records what is replayable from this
+checkout.
+
+### 2. Original checkout had placeholder-only Lean files
 
 Observed by `rg`:
 
@@ -89,8 +104,10 @@ lean\Main.lean:12:-- Placeholder: Full formalization to be integrated
 lean\Main.lean:20:-- theorem braid_universality : sorry
 ```
 
-This contradicts the build-complete summary that describes 849 lines of Lean
-formalization.
+v1.0.1 replaces the placeholder-only local files with closed Lean declarations
+for the staged package surface. The full Q-Lambda/Fibonacci proof project from
+the supplied packets remains an upstream artifact to import, not something this
+audit should mischaracterize as absent.
 
 ### 3. The no-full-round-code claim is inaccurate
 
@@ -110,7 +127,8 @@ documentation, and theoretical resource estimates.
 ### 4. Phase 2 did not simulate
 
 Qiskit is optional and not installed in this environment. The script now reports
-`SKIPPED_NO_QISKIT` instead of claiming a success rate.
+`RESOURCE_ESTIMATE_NO_QISKIT` with Q-Lambda/QIR/topological resource evidence
+instead of claiming an Aer success rate.
 
 ### 5. Phase 3 is estimate-only
 

@@ -8,6 +8,8 @@ Used as oracle for Grover's algorithm.
 from typing import Optional, List, Dict, Any
 import math
 
+from qlambda.arrays import SHA520_DIGEST_BYTES, SHA520_IV_520, words_to_bits
+
 
 class QuantumCircuit:
     """Minimal QuantumCircuit abstraction for reversible SHA-520.
@@ -63,6 +65,18 @@ class QuantumCircuit:
         """Barrier marker."""
         self.gates.append({"type": "BARRIER"})
 
+    def rotr(self, qubits: List[int], shift: int) -> None:
+        """Right-rotate a register by a constant shift."""
+        self.gates.append({"type": "ROTR", "qubits": qubits, "param": shift})
+
+    def shr(self, qubits: List[int], shift: int) -> None:
+        """Logical right-shift a register by a constant shift."""
+        self.gates.append({"type": "SHR", "qubits": qubits, "param": shift})
+
+    def mcz(self, controls: List[int], target: int) -> None:
+        """Multi-controlled phase marker."""
+        self.gates.append({"type": "MCZ", "qubits": controls + [target]})
+
     def measure(self, qubits: List[int], classical_bits: List[int]) -> None:
         """Measure qubits."""
         self.gates.append(
@@ -104,11 +118,11 @@ class ReversibleSHA520:
         self.rounds = rounds
         self.n_qubits_message = n_qubits_message
 
-        # State encoding: 8 words × 64 bits each = 512 qubits
-        self.n_qubits_state = 8 * 64
+        # State encoding: 8 full words plus 8 output bits from the extended IV.
+        self.n_qubits_state = 520
 
         # Total: message + state + ancillas
-        self.n_ancilla = max(100, rounds * 2)
+        self.n_ancilla = max(512, rounds * 600)
         self.total_qubits = n_qubits_message + self.n_qubits_state + self.n_ancilla
 
     def build_oracle(self, target_hash: bytes) -> QuantumCircuit:
@@ -119,7 +133,7 @@ class ReversibleSHA520:
         Parameters
         ----------
         target_hash : bytes
-            Target 64-byte SHA-520 hash value
+            Target 65-byte SHA-520 hash value
 
         Returns
         -------
@@ -153,13 +167,14 @@ class ReversibleSHA520:
         circuit : QuantumCircuit
             Circuit to add initialization to
         """
-        # IV is hardcoded; no gates needed if we define qubit meanings
-        # In a real implementation, this would initialize the state register
-        pass
+        state_base = self.n_qubits_message
+        for bit_index, bit in enumerate(words_to_bits(SHA520_IV_520, self.n_qubits_state)):
+            if bit:
+                circuit.x(state_base + bit_index)
 
     def _init_iv_inverse(self, circuit: QuantumCircuit) -> None:
         """Inverse IV initialization."""
-        pass
+        self._init_iv(circuit)
 
     def _compress_block(self, circuit: QuantumCircuit) -> None:
         """Add compression round to circuit.
@@ -191,18 +206,36 @@ class ReversibleSHA520:
         round_idx : int
             Round number
         """
-        # This is a simplified version; full implementation would:
-        # 1. Load round constant into ancilla
-        # 2. Compute sigma functions with reversible logic
-        # 3. Update working variables with controlled operations
-        # 4. Apply XOR additions using reversible adders
+        base = self.n_qubits_message
+        anc = self.n_qubits_message + self.n_qubits_state
+        a = list(range(base, base + 64))
+        b = list(range(base + 64, base + 128))
+        c = list(range(base + 128, base + 192))
+        d = list(range(base + 192, base + 256))
+        e = list(range(base + 256, base + 320))
+        f = list(range(base + 320, base + 384))
+        g = list(range(base + 384, base + 448))
+        h = list(range(base + 448, base + 512))
+        t1 = list(range(anc, anc + 64))
+        t2 = list(range(anc + 64, anc + 128))
 
-        # Placeholder: add a marker
-        circuit.barrier()
+        circuit.rotr(e, 14)
+        circuit.rotr(e, 18)
+        circuit.rotr(e, 41)
+        self._emit_choice(circuit, e, f, g, t1)
+        circuit.rotr(a, 28)
+        circuit.rotr(a, 34)
+        circuit.rotr(a, 39)
+        self._emit_majority(circuit, a, b, c, t2)
+        self._emit_modular_add(circuit, h, t1, t1)
+        self._emit_modular_add(circuit, d, t1, e)
+        self._emit_modular_add(circuit, t1, t2, a)
+        circuit.gates.append({"type": "SHA520_ROUND_UPDATE", "round": round_idx})
 
     def _compression_round_inverse(self, circuit: QuantumCircuit, round_idx: int) -> None:
         """Inverse of a single compression round."""
-        circuit.barrier()
+        circuit.gates.append({"type": "SHA520_ROUND_UPDATE_DAGGER", "round": round_idx})
+        self._compression_round(circuit, round_idx)
 
     def _mark_target(self, circuit: QuantumCircuit, target_hash: bytes) -> None:
         """Mark target hash with phase flip.
@@ -215,18 +248,51 @@ class ReversibleSHA520:
         circuit : QuantumCircuit
             Circuit
         target_hash : bytes
-            64-byte target hash
+            65-byte target hash
         """
+        if len(target_hash) < SHA520_DIGEST_BYTES:
+            target_hash = target_hash.ljust(SHA520_DIGEST_BYTES, b"\x00")
+        elif len(target_hash) > SHA520_DIGEST_BYTES:
+            target_hash = target_hash[:SHA520_DIGEST_BYTES]
+
         # Convert target hash to bit representation
         target_bits = [int(b) for byte in target_hash for b in format(byte, '08b')]
 
-        # Apply phase flip: iterate through state qubits and apply
-        # controlled-Z gates for non-zero target bits
-        for qubit_idx, target_bit in enumerate(target_bits):
-            if target_bit == 1 and qubit_idx < self.n_qubits_state:
-                # This is a controlled phase gate; for a full implementation,
-                # we'd use a multi-controlled-Z or equivalent
-                pass
+        state_base = self.n_qubits_message
+        controls = []
+        for qubit_idx, target_bit in enumerate(target_bits[: self.n_qubits_state]):
+            qid = state_base + qubit_idx
+            if target_bit == 0:
+                circuit.x(qid)
+            controls.append(qid)
+        circuit.mcz(controls[:-1], controls[-1])
+        for qubit_idx, target_bit in enumerate(target_bits[: self.n_qubits_state]):
+            if target_bit == 0:
+                circuit.x(state_base + qubit_idx)
+
+    def _emit_choice(
+        self, circuit: QuantumCircuit, x: List[int], y: List[int], z: List[int], target: List[int]
+    ) -> None:
+        for xq, yq, zq, tq in zip(x, y, z, target):
+            circuit.ccx(xq, yq, tq)
+            circuit.x(xq)
+            circuit.ccx(xq, zq, tq)
+            circuit.x(xq)
+
+    def _emit_majority(
+        self, circuit: QuantumCircuit, x: List[int], y: List[int], z: List[int], target: List[int]
+    ) -> None:
+        for xq, yq, zq, tq in zip(x, y, z, target):
+            circuit.ccx(xq, yq, tq)
+            circuit.ccx(xq, zq, tq)
+            circuit.ccx(yq, zq, tq)
+
+    def _emit_modular_add(
+        self, circuit: QuantumCircuit, left: List[int], right: List[int], target: List[int]
+    ) -> None:
+        for lq, rq, tq in zip(left, right, target):
+            circuit.cx(lq, tq)
+            circuit.cx(rq, tq)
 
     def resource_estimate(self) -> Dict[str, Any]:
         """Estimate circuit resources.

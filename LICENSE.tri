@@ -25,7 +25,7 @@ WHICH LICENSE APPLIES?
 
 Use this engine itself to determine:
 
-  swipl -q -t halt -f backends/license_policy.pl -- select <your_use_case>
+  PYTHONPATH=python python -m qlambda.license_policy select <your_use_case>
 
 Use cases:
   - saas_wrapper -> AGPL-3.0

@@ -14,6 +14,9 @@ sys.path.insert(0, str(REPO_ROOT / "python"))
 
 import json
 from datetime import datetime
+from qlambda.compiler import compile_source
+from qlambda.programs import SHA520_SIGMA0_AND_CH
+from topological.resource_estimates import estimate_sha520_r_topological
 
 
 def run_phase2_simulation():
@@ -44,17 +47,27 @@ def run_phase2_simulation():
         print(f"   - {cfg['name']}: {cfg['rounds']}-round, {cfg['target_bits']}-bit target")
 
         if has_qiskit:
+            qir = compile_source(SHA520_SIGMA0_AND_CH)
+            estimate = estimate_sha520_r_topological(cfg["rounds"], cfg["target_bits"])
             result = {
                 "config": cfg,
-                "status": "NOT_EXECUTED_PLACEHOLDER",
-                "evidence": "Qiskit is installed, but this phase script has not run the oracle simulator yet.",
+                "status": "RESOURCE_ESTIMATE",
+                "evidence": "Qiskit is installed; this phase records Q-Lambda/QIR resource evidence without running Aer.",
+                "qlambda_qir_gates": len(qir),
+                "physical_anyons": estimate.physical_anyons,
+                "total_braids": estimate.total_braids,
                 "circuit_depth": cfg['rounds'] * 2000 + cfg['target_bits'] * 100,
             }
         else:
+            qir = compile_source(SHA520_SIGMA0_AND_CH)
+            estimate = estimate_sha520_r_topological(cfg["rounds"], cfg["target_bits"])
             result = {
                 "config": cfg,
-                "status": "SKIPPED_NO_QISKIT",
-                "reason": "Qiskit not installed"
+                "status": "RESOURCE_ESTIMATE_NO_QISKIT",
+                "reason": "Qiskit not installed; recorded Q-Lambda/QIR/topological resource estimate instead.",
+                "qlambda_qir_gates": len(qir),
+                "physical_anyons": estimate.physical_anyons,
+                "total_braids": estimate.total_braids,
             }
         results.append(result)
 
@@ -62,7 +75,7 @@ def run_phase2_simulation():
     report = {
         "timestamp": datetime.now().isoformat(),
         "phase": "2",
-        "status": "SKIPPED_NO_QISKIT" if not has_qiskit else "PLACEHOLDER_ONLY",
+        "status": "RESOURCE_ESTIMATE_NO_QISKIT" if not has_qiskit else "RESOURCE_ESTIMATE",
         "qiskit_available": has_qiskit,
         "simulations": results,
         "total_configurations": len(results),

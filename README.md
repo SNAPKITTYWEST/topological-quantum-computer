@@ -1,6 +1,6 @@
 # Topological Quantum Computer: Fibonacci Anyon Model
 
-[![release](https://img.shields.io/badge/release-v1.0.0-blue)](RELEASE_NOTES.md)
+[![release](https://img.shields.io/badge/release-v1.0.1-blue)](RELEASE_NOTES.md)
 [![license](https://img.shields.io/badge/license-BSL--1.1%20%2F%20AGPL--3.0%20%2F%20MPL--2.0-green)](LICENSE.tri)
 [![status](https://img.shields.io/badge/status-staged%20research%20release-purple)](PACKAGE.md)
 [![python](https://img.shields.io/badge/python-3.9%2B-3776ab)](pyproject.toml)
@@ -21,7 +21,7 @@ A mathematical formalization and simulation framework for a hypothetical topolog
 
 ## v1.0 Package Status
 
-Version `1.0.0` is a staged research release. It is packaged for audit,
+Version `1.0.1` is a staged research release. It is packaged for audit,
 reproduction, licensing review, and further development. It is not a claim of
 physical hardware availability, full theorem closure, or full-round
 cryptanalytic deployment.
@@ -31,11 +31,14 @@ cryptanalytic deployment.
 | `README.md` | Institutional entry point | Present |
 | `ABOUT.md` | Short project overview | Present |
 | `LICENSE.tri` | Tri-license terms | Present |
-| `backends/license_policy.pl` | PAX-style license policy engine | Present |
+| `python/qlambda/arrays.py` | SHA-520 constants, falsification arrays, DSL primitive arrays | Present |
+| `python/qlambda/compiler.py` | Q-Lambda lexer/parser/QIR synthesizer | Present |
+| `python/topological/` | QIR-to-braid resource backend | Present |
+| `python/qlambda/license_policy.py` | Array-backed license policy engine | Present |
 | `PACKAGE.md` | Release/package manifest | Present |
-| `RELEASE_NOTES.md` | v1.0.0 staged release notes | Present |
+| `RELEASE_NOTES.md` | v1.0.1 staged release notes | Present |
 | `CODEX_AUDIT.md` | Audit findings and residual gates | Present |
-| `lean/` | Lean 4 formalization surfaces | Toolchain-gated |
+| `lean/` | Lean 4 formalization surfaces | Local named targets build |
 | `python/` | Classical, quantum, simulator modules | Syntax/import checked |
 | `experiments/` | Four validation phases | Reduced-round / staged |
 | `docs/` | Architecture, falsification, threat model, user guide | Present |
@@ -67,7 +70,7 @@ It is a falsifiable framework for showing exactly where the advantage stops:
 - and where physical/runtime resources make the attack impractical.
 
 This also explains why constraint systems matter. For many structured problems,
-a constraint solver, proof engine, SAT/SMT system, Prolog engine, or Lean-backed
+a constraint solver, proof engine, SAT/SMT system, Q-Lambda compiler, or Lean-backed
 search can do the useful part more directly: encode rules, eliminate impossible
 states, propagate consequences, and produce witnesses or contradictions.
 
@@ -128,6 +131,16 @@ topological-quantum-computer/
 │   └── Main.lean                 # Integration & main results
 │
 ├── python/
+│   ├── qlambda/                  # Q-Lambda DSL, arrays, policy engine
+│   │   ├── arrays.py             # SHA-520 IV/K arrays and falsification arrays
+│   │   ├── compiler.py           # Lexer, parser, QIR synthesizer
+│   │   ├── programs.py           # SHA-520-r Q-Lambda source programs
+│   │   └── license_policy.py     # Python tri-license selector
+│   │
+│   ├── topological/              # QIR-to-Fibonacci-braid resource backend
+│   │   ├── braid_backend.py      # Gate-to-braid mapping
+│   │   └── resource_estimates.py # Anyon/braid estimates and flags
+│   │
 │   ├── classical/                # Classical cryptographic reference
 │   │   ├── sha520_ref.py         # SHA-520 implementation (reduced-round)
 │   │   ├── classical_baselines.py # Brute-force & birthday attacks
@@ -160,12 +173,10 @@ topological-quantum-computer/
 ├── ABOUT.md                         # Short project positioning
 ├── LICENSE.tri                      # Tri-license structure
 ├── PACKAGE.md                       # Package manifest
-├── RELEASE_NOTES.md                 # v1.0.0 release notes
+├── RELEASE_NOTES.md                 # v1.0.1 release notes
 ├── VERSION                          # Version marker
 ├── CODEX_AUDIT.md                   # Codex audit notes and gates
 ├── CLAUDE.md                        # Integrity gates & vision
-├── backends/
-│   └── license_policy.pl            # PAX-style license policy reasoner
 ├── pyproject.toml                   # Python build config
 └── .gitignore                       # Git exclusions
 ```
@@ -262,7 +273,7 @@ R^{ττ}_τ = e^{3πi/5}    (τ channel)
 | Fibonacci anyons exist physically | **UNPROVEN** |
 | Topological quantum computer can be built | **UNPROVEN** |
 | TAE algorithm breaks SHA-520 | **FALSE** (no advantage) |
-| SHA-520 is a real standard | **FALSE** (repository-defined SHA-512-family research label; current implementation returns 512-bit digests) |
+| SHA-520 is a real standard | **FALSE** (repository-defined SHA-512-family research label; current implementation returns 520-bit digests) |
 | "Qubit stealing" creates free qubits | **FALSE** (basis reallocation) |
 | Architecture scales to millions of qubits | **UNPROVEN** (likely breaks at ~10⁴) |
 | Topological protection eliminates error correction | **FALSE** (still need syndrome measurement) |
@@ -376,7 +387,7 @@ verification gates. It does **not** mean:
 - SHA-style full-round cryptanalysis has been demonstrated or authorized.
 
 Any stronger deployment claim requires a separate gate: license selection via
-`backends/license_policy.pl`, safety review, dependency/hardware evidence, and
+`python -m qlambda.license_policy`, safety review, dependency/hardware evidence, and
 the relevant Lean/Qiskit/resource checks.
 
 ---
@@ -417,10 +428,10 @@ This repository uses the same tri-license structure as the PAX stack. See
 Use the policy engine:
 
 ```bash
-swipl -q -t halt -f backends/license_policy.pl -- select saas_wrapper
-swipl -q -t halt -f backends/license_policy.pl -- select enterprise_restricted
-swipl -q -t halt -f backends/license_policy.pl -- select file_level_mod
-swipl -q -t halt -f backends/license_policy.pl -- select copyleft_bypass
+PYTHONPATH=python python -m qlambda.license_policy select saas_wrapper
+PYTHONPATH=python python -m qlambda.license_policy select enterprise_restricted
+PYTHONPATH=python python -m qlambda.license_policy select file_level_mod
+PYTHONPATH=python python -m qlambda.license_policy select copyleft_bypass
 ```
 
 No license path authorizes false claims of physical hardware, full theorem
