@@ -1,5 +1,12 @@
 # Topological Quantum Computer: Fibonacci Anyon Model
 
+[![release](https://img.shields.io/badge/release-v1.0.0-blue)](RELEASE_NOTES.md)
+[![license](https://img.shields.io/badge/license-BSL--1.1%20%2F%20AGPL--3.0%20%2F%20MPL--2.0-green)](LICENSE.tri)
+[![status](https://img.shields.io/badge/status-staged%20research%20release-purple)](PACKAGE.md)
+[![python](https://img.shields.io/badge/python-3.9%2B-3776ab)](pyproject.toml)
+[![lean](https://img.shields.io/badge/Lean%204-toolchain--gated-8c6d1f)](CODEX_AUDIT.md)
+[![safety](https://img.shields.io/badge/safety-no%20real%20cryptanalysis-critical)](docs/THREAT_MODEL.md)
+
 **Research-grade theoretical design from first principles.**
 
 A mathematical formalization and simulation framework for a hypothetical topological quantum computer based on the Fibonacci anyon model (SU(2)₃ Chern-Simons theory). This is **not a physical implementation**—it is a rigorous mathematical model with falsifiable criteria and explicit conjectures about physical realizability.
@@ -9,6 +16,29 @@ A mathematical formalization and simulation framework for a hypothetical topolog
 ## Status
 
 **Mathematical Model Only.** No Fibonacci anyon system has been physically realized. The ν = 12/5 fractional quantum Hall state is a theoretical candidate; experimental confirmation remains open.
+
+---
+
+## v1.0 Package Status
+
+Version `1.0.0` is a staged research release. It is packaged for audit,
+reproduction, licensing review, and further development. It is not a claim of
+physical hardware availability, full theorem closure, or full-round
+cryptanalytic deployment.
+
+| Surface | Package role | Status |
+|---------|--------------|--------|
+| `README.md` | Institutional entry point | Present |
+| `ABOUT.md` | Short project overview | Present |
+| `LICENSE.tri` | Tri-license terms | Present |
+| `backends/license_policy.pl` | PAX-style license policy engine | Present |
+| `PACKAGE.md` | Release/package manifest | Present |
+| `RELEASE_NOTES.md` | v1.0.0 staged release notes | Present |
+| `CODEX_AUDIT.md` | Audit findings and residual gates | Present |
+| `lean/` | Lean 4 formalization surfaces | Toolchain-gated |
+| `python/` | Classical, quantum, simulator modules | Syntax/import checked |
+| `experiments/` | Four validation phases | Reduced-round / staged |
+| `docs/` | Architecture, falsification, threat model, user guide | Present |
 
 ---
 
@@ -127,7 +157,15 @@ topological-quantum-computer/
 │   └── USER_GUIDE.md                # Setup, CORTO analysis, prior-art map
 │
 ├── README.md                        # This file
+├── ABOUT.md                         # Short project positioning
+├── LICENSE.tri                      # Tri-license structure
+├── PACKAGE.md                       # Package manifest
+├── RELEASE_NOTES.md                 # v1.0.0 release notes
+├── VERSION                          # Version marker
+├── CODEX_AUDIT.md                   # Codex audit notes and gates
 ├── CLAUDE.md                        # Integrity gates & vision
+├── backends/
+│   └── license_policy.pl            # PAX-style license policy reasoner
 ├── pyproject.toml                   # Python build config
 └── .gitignore                       # Git exclusions
 ```
@@ -325,6 +363,24 @@ lake env leanc BraidCompilation.lean
 
 ---
 
+## Production Boundary
+
+For this repository, "production" means a packaged, versioned, auditable
+research release with setup docs, license routing, release notes, and explicit
+verification gates. It does **not** mean:
+
+- a physical topological quantum computer exists,
+- every Lean theorem is kernel-closed,
+- Qiskit/noise simulation has run in every environment,
+- resource estimates are hardware measurements,
+- SHA-style full-round cryptanalysis has been demonstrated or authorized.
+
+Any stronger deployment claim requires a separate gate: license selection via
+`backends/license_policy.pl`, safety review, dependency/hardware evidence, and
+the relevant Lean/Qiskit/resource checks.
+
+---
+
 ## Integrity Gates
 
 **This work requires review by:**
@@ -348,7 +404,27 @@ lake env leanc BraidCompilation.lean
 
 ## License
 
-Research only. No commercial use. All proofs and code subject to [CLAUDE.md](CLAUDE.md) integrity gates.
+This repository uses the same tri-license structure as the PAX stack. See
+[`LICENSE.tri`](LICENSE.tri).
+
+| Path | Meaning |
+|------|---------|
+| BSL-1.1 | Source-available path with commercial restrictions until the change date |
+| AGPL-3.0 | Strong network-copyleft path |
+| MPL-2.0 | File-level copyleft path |
+| Commercial | Commercial license path for copyleft bypass |
+
+Use the policy engine:
+
+```bash
+swipl -q -t halt -f backends/license_policy.pl -- select saas_wrapper
+swipl -q -t halt -f backends/license_policy.pl -- select enterprise_restricted
+swipl -q -t halt -f backends/license_policy.pl -- select file_level_mod
+swipl -q -t halt -f backends/license_policy.pl -- select copyleft_bypass
+```
+
+No license path authorizes false claims of physical hardware, full theorem
+closure, full-round SHA breaks, key recovery, or unsafe deployment.
 
 ---
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "topological-quantum-computer"
-version = "0.1.0"
+version = "1.0.0"
 description = "Mathematical formalization and simulation of Fibonacci anyon topological quantum computer"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -12,7 +12,7 @@ authors = [
     {name = "Ahmad", email = "ahmedparr93@gmail.com"},
     {name = "Claude Code", email = "claude@anthropic.com"}
 ]
-license = {text = "Research Only"}
+license = {text = "Tri-license: BSL-1.1 / AGPL-3.0 / MPL-2.0 + Commercial"}
 
 dependencies = [
     "numpy>=1.21",
