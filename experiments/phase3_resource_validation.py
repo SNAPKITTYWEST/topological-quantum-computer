@@ -56,8 +56,8 @@ def validate_resource_estimates():
         }
         results.append(result)
         print(f"\n   {result['config']}:")
-        print(f"     T-gates: {result['estimated_t_gates']} → {int(result['actual_t_gates'])} (Δ {result['deviation_t_gates_pct']:.1f}%)")
-        print(f"     Depth:   {result['estimated_depth']} → {int(result['actual_depth'])} (Δ {result['deviation_depth_pct']:.1f}%)")
+        print(f"     T-gates: {result['estimated_t_gates']} -> {int(result['actual_t_gates'])} (delta {result['deviation_t_gates_pct']:.1f}%)")
+        print(f"     Depth:   {result['estimated_depth']} -> {int(result['actual_depth'])} (delta {result['deviation_depth_pct']:.1f}%)")
 
     # Generate report
     report = {
@@ -77,7 +77,7 @@ def validate_resource_estimates():
     output_file = Path(__file__).with_name("phase3_report.json")
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
-    print(f"\n   ✓ Report saved to {output_file}")
+    print(f"\n   OK Report saved to {output_file}")
 
     return report
 

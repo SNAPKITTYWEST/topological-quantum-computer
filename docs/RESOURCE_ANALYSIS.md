@@ -70,12 +70,12 @@ t_total ≈ 2^260 iterations × 14 sec/iteration = 10^70 years
 T₂ needed > 10^70 years
 ```
 
-**Topological protection claims:** T₂ > 1 second (theoretical)  
+**Topological protection claims:** T₂ > 1 second (theoretical)
 **Gap:** 10^70 years > 1 second—still impossible.
 
 ## Error Correction Cycles
 
-**Surface code threshold:** ~1% physical error → ~10% logical per cycle  
+**Surface code threshold:** ~1% physical error → ~10% logical per cycle
 **Topological threshold (conjectured):** ~1% (same or better)
 
 No advantage unless:

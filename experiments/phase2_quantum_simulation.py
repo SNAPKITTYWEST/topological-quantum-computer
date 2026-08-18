@@ -24,11 +24,11 @@ def run_phase2_simulation():
     print("\n1. Attempting import of Qiskit...")
     try:
         from qiskit import QuantumCircuit, QuantumRegister
-        print("   ✓ Qiskit available")
+        print("   OK Qiskit available")
         has_qiskit = True
     except ImportError:
-        print("   ⚠ Qiskit not available (optional dependency)")
-        print("   → Run: pip install qiskit qiskit-aer")
+        print("   WARN Qiskit not available (optional dependency)")
+        print("   Run: pip install qiskit qiskit-aer")
         has_qiskit = False
 
     print("\n2. Simulation configurations:")
@@ -74,7 +74,7 @@ def run_phase2_simulation():
     output_file = Path(__file__).with_name("phase2_report.json")
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
-    print(f"\n   ✓ Report saved to {output_file}")
+    print(f"\n   OK Report saved to {output_file}")
 
     return report
 

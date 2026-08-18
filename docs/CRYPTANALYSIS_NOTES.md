@@ -26,7 +26,8 @@ Reversible circuit O_f: |x⟩|y⟩ → |x⟩|y ⊕ f(x)⟩
 
 **Complexity:**
 - Input: 512 qubits (message)
-- Output: 520 bits (digest)
+- Output: currently 512 bits in `python/classical/sha520_ref.py`; `SHA-520`
+  is the repository's research label, not a NIST standard name
 - Work qubits: ~2,000 ancillas
 - T-gates: ~10⁶ per oracle call
 

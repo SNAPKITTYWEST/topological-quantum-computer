@@ -10,7 +10,7 @@
 - Birthday collision (r=4: expect 2^8 trials)
 
 ### Success Criteria
-- ✓ Test vectors match SHA-512 reference
+- ✓ Test vectors match the repository SHA-520-r reference implementation
 - ✓ Brute-force in ~2^target_bits trials
 - ✓ Collision in ~2^(target_bits/2) trials
 

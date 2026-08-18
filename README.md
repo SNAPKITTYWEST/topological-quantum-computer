@@ -78,7 +78,8 @@ topological-quantum-computer/
 │   ├── RESOURCE_ANALYSIS.md         # Scaling & resource estimates
 │   ├── THREAT_MODEL.md              # Security boundaries
 │   ├── EXPERIMENTAL_PROTOCOL.md     # 4-phase validation plan
-│   └── CRYPTANALYSIS_NOTES.md       # Algorithm details & comparisons
+│   ├── CRYPTANALYSIS_NOTES.md       # Algorithm details & comparisons
+│   └── USER_GUIDE.md                # Setup, CORTO analysis, prior-art map
 │
 ├── README.md                        # This file
 ├── CLAUDE.md                        # Integrity gates & vision
@@ -178,7 +179,7 @@ R^{ττ}_τ = e^{3πi/5}    (τ channel)
 | Fibonacci anyons exist physically | **UNPROVEN** |
 | Topological quantum computer can be built | **UNPROVEN** |
 | TAE algorithm breaks SHA-520 | **FALSE** (no advantage) |
-| SHA-520 is a real standard | **FALSE** (custom 520-bit variant) |
+| SHA-520 is a real standard | **FALSE** (repository-defined SHA-512-family research label; current implementation returns 512-bit digests) |
 | "Qubit stealing" creates free qubits | **FALSE** (basis reallocation) |
 | Architecture scales to millions of qubits | **UNPROVEN** (likely breaks at ~10⁴) |
 | Topological protection eliminates error correction | **FALSE** (still need syndrome measurement) |
@@ -255,6 +256,7 @@ lake env leanc BraidCompilation.lean
 - **[THREAT_MODEL.md](docs/THREAT_MODEL.md)** — Security boundaries, dual-use mitigations
 - **[EXPERIMENTAL_PROTOCOL.md](docs/EXPERIMENTAL_PROTOCOL.md)** — Four-phase validation plan
 - **[CRYPTANALYSIS_NOTES.md](docs/CRYPTANALYSIS_NOTES.md)** — Algorithm comparisons, oracle model
+- **[USER_GUIDE.md](docs/USER_GUIDE.md)** — Setup, CORTO analysis, algorithms, prior-art boundaries
 
 ---
 

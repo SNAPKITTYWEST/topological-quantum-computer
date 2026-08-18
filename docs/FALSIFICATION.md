@@ -28,7 +28,7 @@
 
 ## Experimental Validation Phases
 
-**Phase 1 (Classical):** SHA-520-r test vectors match SHA-512 reference
+**Phase 1 (Classical):** SHA-520-r test vectors match the repository reference implementation
 **Phase 2 (Quantum):** Toy 4-round simulation > 80% success
 **Phase 3 (Resources):** Estimated vs actual deviation < 20%
 **Phase 4 (Topological):** Braid compilation polynomial-scale (theory only)

@@ -47,8 +47,10 @@ def measure_classical_attacks():
             key = f"r{rounds}_b{bits}"
             metrics = measure_classical_complexity(rounds, bits)
             results[key] = {
-                "preimage_expected": metrics['preimage_expected'],
-                "collision_expected": metrics['collision_expected'],
+                "preimage_trials": metrics["preimage_trials"],
+                "collision_trials": metrics["collision_trials"],
+                "preimage_time_sec": metrics["preimage_time_sec"],
+                "collision_time_sec": metrics["collision_time_sec"],
                 "security_bits": bits
             }
 
@@ -62,11 +64,11 @@ def run_phase1():
 
     print("\n1. Validating test vectors...")
     test_results = validate_test_vectors()
-    print(f"   ✓ Generated test vectors for {len(test_results)} configurations")
+    print(f"   OK Generated test vectors for {len(test_results)} configurations")
 
     print("\n2. Measuring classical complexity...")
     classical_metrics = measure_classical_attacks()
-    print(f"   ✓ Computed complexity for {len(classical_metrics)} round-bit pairs")
+    print(f"   OK Computed complexity for {len(classical_metrics)} round-bit pairs")
 
     # Generate report
     report = {
@@ -84,7 +86,7 @@ def run_phase1():
     output_file = Path(__file__).with_name("phase1_report.json")
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
-    print(f"\n   ✓ Report saved to {output_file}")
+    print(f"\n   OK Report saved to {output_file}")
 
     return report
 

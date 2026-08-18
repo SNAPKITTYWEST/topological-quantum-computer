@@ -91,7 +91,7 @@ def generate_braid_compilation():
     output_file = Path(__file__).with_name("phase4_report.json")
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
-    print(f"\n   ✓ Report saved to {output_file}")
+    print(f"\n   OK Report saved to {output_file}")
 
     return report
 
